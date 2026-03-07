@@ -57,6 +57,21 @@ func TestSplitCommands(t *testing.T) {
 			want:    []string{"echo hello", `jq '[.[] | select(.x)]'`},
 		},
 		{
+			name:    "コマンド置換内のコマンドも展開",
+			command: `echo "$(cat file)"`,
+			want:    []string{`echo "$()"`, "cat file"},
+		},
+		{
+			name:    "コマンド置換内のパイプも展開",
+			command: `echo "$(echo foo | grep f)"`,
+			want:    []string{`echo "$()"`, "echo foo", "grep f"},
+		},
+		{
+			name:    "コマンド置換+チェーン",
+			command: `echo "$(cat file)" && ls`,
+			want:    []string{`echo "$()"`, "cat file", "ls"},
+		},
+		{
 			name:    "空文字列",
 			command: "",
 			want:    nil,
