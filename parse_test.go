@@ -97,3 +97,66 @@ func TestSplitCommands(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandNames(t *testing.T) {
+	tests := []struct {
+		name    string
+		command string
+		want    []string
+	}{
+		{
+			name:    "単一コマンド",
+			command: "ls -la",
+			want:    []string{"ls"},
+		},
+		{
+			name:    "サブコマンド",
+			command: "git log --oneline",
+			want:    []string{"git log"},
+		},
+		{
+			name:    "パイプ",
+			command: "git log --oneline | wc -l",
+			want:    []string{"git log", "wc"},
+		},
+		{
+			name:    "コマンド置換内も展開",
+			command: `echo "$(cat file)" && ls`,
+			want:    []string{"echo", "cat", "ls"},
+		},
+		{
+			name:    "makeはサブコマンドあり",
+			command: "make build && make test",
+			want:    []string{"make build", "make test"},
+		},
+		{
+			name:    "jqはサブコマンドなし",
+			command: "jq . file.json | jq .name",
+			want:    []string{"jq", "jq"},
+		},
+		{
+			name:    "空文字列",
+			command: "",
+			want:    nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := commandNames(tt.command)
+			if err != nil {
+				t.Fatalf("commandNames(%q) error: %v", tt.command, err)
+			}
+			if len(got) != len(tt.want) {
+				t.Fatalf("commandNames(%q) = %v (len=%d), want %v (len=%d)",
+					tt.command, got, len(got), tt.want, len(tt.want))
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("commandNames(%q)[%d] = %q, want %q",
+						tt.command, i, got[i], tt.want[i])
+				}
+			}
+		})
+	}
+}

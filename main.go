@@ -9,17 +9,33 @@ import (
 )
 
 func main() {
-	args, countOnly := parseFlags(os.Args[1:])
+	opts := parseFlags(os.Args[1:])
 
-	command, err := readInput(args, os.Stdin)
+	command, err := readInput(opts.args, os.Stdin)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	if command == "" {
-		if countOnly {
+		if opts.countOnly {
 			fmt.Println(0)
+		}
+		return
+	}
+
+	if opts.namesOnly {
+		names, err := commandNames(command)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+		if opts.countOnly {
+			fmt.Println(len(names))
+			return
+		}
+		for _, name := range names {
+			fmt.Println(name)
 		}
 		return
 	}
@@ -30,7 +46,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if countOnly {
+	if opts.countOnly {
 		fmt.Println(len(commands))
 		return
 	}
@@ -40,17 +56,25 @@ func main() {
 	}
 }
 
-// parseFlags はフラグを解析し、残りの引数とオプションを返す。
-func parseFlags(args []string) (remaining []string, countOnly bool) {
+type options struct {
+	args      []string
+	countOnly bool
+	namesOnly bool
+}
+
+func parseFlags(args []string) options {
+	var opts options
 	for _, arg := range args {
 		switch arg {
 		case "-n":
-			countOnly = true
+			opts.countOnly = true
+		case "-c":
+			opts.namesOnly = true
 		default:
-			remaining = append(remaining, arg)
+			opts.args = append(opts.args, arg)
 		}
 	}
-	return
+	return opts
 }
 
 // readInput は引数またはstdinからコマンド文字列を取得する。
