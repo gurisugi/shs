@@ -1,4 +1,4 @@
-module github.com/gurisugi/chcc
+module github.com/gurisugi/shs
 
 go 1.24.4
 
