@@ -62,7 +62,7 @@ func readInput(args []string, stdin io.Reader) (string, error) {
 	// stdinがターミナルの場合は使い方を表示
 	if f, ok := stdin.(*os.File); ok {
 		if isTerminal(f) {
-			return "", fmt.Errorf("usage: chcc <command>\n       echo <command> | chcc")
+			return "", fmt.Errorf("usage: shs <command>\n       echo <command> | shs")
 		}
 	}
 
