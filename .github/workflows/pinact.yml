@@ -1,0 +1,17 @@
+name: pinact
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  pinact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: suzuki-shunsuke/pinact-action@1081f5ad49ac904b7d977784f338145150a32112 # v1.4.0
+        with:
+          skip_push: "true"
