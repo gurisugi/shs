@@ -14,7 +14,7 @@ jobs:
   tagpr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Songmu/tagpr@v1
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: Songmu/tagpr@b3fb89424646b06c8aa460f50307c60b6a541425 # v1.17.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
