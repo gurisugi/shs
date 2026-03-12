@@ -69,6 +69,9 @@ func parseFlags(args []string) (options, error) {
 		case "-h", "--help":
 			opts.help = true
 		default:
+			if strings.HasPrefix(arg, "-") {
+				return options{}, fmt.Errorf("unknown flag: %s", arg)
+			}
 			opts.args = append(opts.args, arg)
 		}
 	}
