@@ -9,66 +9,55 @@ import (
 )
 
 func main() {
-	opts := parseFlags(os.Args[1:])
+	opts, err := parseFlags(os.Args[1:])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
 
 	if opts.help {
 		printUsage()
 		return
 	}
 
-	command, err := readInput(opts.args, os.Stdin)
+	command, err := readInput(os.Stdin)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	if command == "" {
-		if opts.countOnly {
-			fmt.Println(0)
-		}
 		return
 	}
 
+	var results []string
 	if opts.namesOnly {
-		names, err := commandNames(command)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
-		}
-		if opts.countOnly {
-			fmt.Println(len(names))
-			return
-		}
-		for _, name := range names {
-			fmt.Println(name)
-		}
-		return
+		results, err = commandNames(command)
+	} else {
+		results, err = splitCommands(command)
 	}
-
-	commands, err := splitCommands(command)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	if opts.countOnly {
-		fmt.Println(len(commands))
+		fmt.Println(len(results))
 		return
 	}
 
-	for _, cmd := range commands {
-		fmt.Println(cmd)
+	for _, r := range results {
+		fmt.Println(r)
 	}
 }
 
 type options struct {
-	args      []string
 	countOnly bool
 	namesOnly bool
 	help      bool
 }
 
-func parseFlags(args []string) options {
+func parseFlags(args []string) (options, error) {
 	var opts options
 	for _, arg := range args {
 		switch arg {
@@ -79,10 +68,13 @@ func parseFlags(args []string) options {
 		case "-h", "--help":
 			opts.help = true
 		default:
-			opts.args = append(opts.args, arg)
+			return options{}, fmt.Errorf("unexpected argument: %s", arg)
 		}
 	}
-	return opts
+	if opts.countOnly && opts.namesOnly {
+		return options{}, fmt.Errorf("-c and -n cannot be used together")
+	}
+	return opts, nil
 }
 
 func printUsage() {
@@ -92,39 +84,34 @@ Split chained shell commands (pipes, &&, ||, ;) into individual commands.
 Command substitutions $() are also expanded recursively.
 
 Usage:
-  shs [options] <command>
   echo <command> | shs [options]
 
 Options:
-  -c    Extract command names only (e.g., "git log" instead of "git log --oneline")
+  -c    Extract command names only (e.g., "git" instead of "git log --oneline")
   -n    Print the number of commands instead of the commands themselves
   -h    Show this help
 
 Examples:
-  $ shs "git log --oneline | wc -l"
+  $ echo "git log --oneline | wc -l" | shs
   git log --oneline
   wc -l
 
-  $ shs -c "git log --oneline | wc -l"
-  git log
+  $ echo "git log --oneline | wc -l" | shs -c
+  git
   wc
 
-  $ shs -n "git log --oneline | wc -l"
+  $ echo "git log --oneline | wc -l" | shs -n
   2
 
-  $ shs 'echo "$(cat file)" && ls'
+  $ echo 'echo "$(cat file)" && ls' | shs
   echo "$()"
   cat file
   ls
 `)
 }
 
-// readInput は引数またはstdinからコマンド文字列を取得する。
-func readInput(args []string, stdin io.Reader) (string, error) {
-	if len(args) > 0 {
-		return strings.Join(args, " "), nil
-	}
-
+// readInput はstdinからコマンド文字列を取得する。
+func readInput(stdin io.Reader) (string, error) {
 	// stdinがターミナルの場合は使い方を表示
 	if f, ok := stdin.(*os.File); ok {
 		if isTerminal(f) {

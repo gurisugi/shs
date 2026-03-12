@@ -15,7 +15,7 @@ func splitCommands(command string) ([]string, error) {
 }
 
 // commandNames はシェルコマンド文字列をパースし、
-// 各コマンドの名前部分（サブコマンド含む、引数除く）を返す。
+// 各コマンドの名前部分（先頭1語）を返す。
 func commandNames(command string) ([]string, error) {
 	calls, _, err := parseCommands(command)
 	if err != nil {
@@ -38,101 +38,62 @@ func parseCommands(command string) ([]*syntax.CallExpr, []string, error) {
 	var calls []*syntax.CallExpr
 	var commands []string
 	for _, stmt := range prog.Stmts {
-		collectFromStmt(stmt, prog, &calls, &commands)
+		collectFromStmt(stmt, &calls, &commands)
 	}
 	return calls, commands, nil
 }
 
-func collectFromStmt(stmt *syntax.Stmt, prog *syntax.File, calls *[]*syntax.CallExpr, out *[]string) {
+func collectFromStmt(stmt *syntax.Stmt, calls *[]*syntax.CallExpr, out *[]string) {
 	if stmt == nil {
 		return
 	}
-	collectFromCmd(stmt.Cmd, prog, calls, out)
+	collectFromCmd(stmt.Cmd, calls, out)
 }
 
-func collectFromCmd(cmd syntax.Command, prog *syntax.File, calls *[]*syntax.CallExpr, out *[]string) {
+func collectFromCmd(cmd syntax.Command, calls *[]*syntax.CallExpr, out *[]string) {
 	if cmd == nil {
 		return
 	}
 	switch c := cmd.(type) {
 	case *syntax.BinaryCmd:
-		collectFromStmt(c.X, prog, calls, out)
-		collectFromStmt(c.Y, prog, calls, out)
+		collectFromStmt(c.X, calls, out)
+		collectFromStmt(c.Y, calls, out)
 	case *syntax.Subshell:
 		for _, stmt := range c.Stmts {
-			collectFromStmt(stmt, prog, calls, out)
+			collectFromStmt(stmt, calls, out)
 		}
 	case *syntax.CallExpr:
 		*calls = append(*calls, c)
-		*out = append(*out, printRedacted(cmd, prog))
-		collectSubstitutions(cmd, prog, calls, out)
+		*out = append(*out, printRedacted(cmd))
+		collectSubstitutions(cmd, calls, out)
 	default:
 		*calls = append(*calls, nil)
-		*out = append(*out, printRedacted(cmd, prog))
-		collectSubstitutions(cmd, prog, calls, out)
+		*out = append(*out, printRedacted(cmd))
+		collectSubstitutions(cmd, calls, out)
 	}
 }
 
 // collectSubstitutions はノード内のコマンド置換 $() を探索し、
 // 中のコマンドを収集する。
-func collectSubstitutions(node syntax.Node, prog *syntax.File, calls *[]*syntax.CallExpr, out *[]string) {
+func collectSubstitutions(node syntax.Node, calls *[]*syntax.CallExpr, out *[]string) {
 	syntax.Walk(node, func(n syntax.Node) bool {
 		cs, ok := n.(*syntax.CmdSubst)
 		if !ok {
 			return true
 		}
 		for _, stmt := range cs.Stmts {
-			collectFromStmt(stmt, prog, calls, out)
+			collectFromStmt(stmt, calls, out)
 		}
 		return false
 	})
 }
 
-// サブコマンドを持つことが既知のコマンド
-var subcommandCommands = map[string]bool{
-	"git":     true,
-	"docker":  true,
-	"kubectl": true,
-	"go":      true,
-	"npm":     true,
-	"yarn":    true,
-	"cargo":   true,
-	"make":    true,
-	"brew":    true,
-	"asdf":    true,
-	"gh":      true,
-	"aws":     true,
-	"gcloud":  true,
-	"az":      true,
-	"heroku":  true,
-	"flyctl":  true,
-	"terraform": true,
-	"systemctl": true,
-	"journalctl": true,
-	"ip":      true,
-}
-
-// extractName はCallExprからコマンド名を抽出する。
-// 既知のサブコマンドを持つコマンド（git, docker等）は2語目まで含める。
-// それ以外は先頭1語のみ。
+// extractName はCallExprからコマンド名（先頭1語）を抽出する。
 func extractName(call *syntax.CallExpr) string {
 	if call == nil || len(call.Args) == 0 {
 		return ""
 	}
-
-	first := wordToLiteral(call.Args[0])
-	if first == "" {
-		return ""
-	}
-
-	if subcommandCommands[first] && len(call.Args) > 1 {
-		second := wordToLiteral(call.Args[1])
-		if second != "" && !strings.HasPrefix(second, "-") {
-			return first + " " + second
-		}
-	}
-
-	return first
+	return wordToLiteral(call.Args[0])
 }
 
 // wordToLiteral はWordノードからリテラル文字列を取得する。
@@ -150,7 +111,7 @@ func wordToLiteral(word *syntax.Word) string {
 }
 
 // printRedacted はノードを出力する際、コマンド置換の中身を$(...)に置換する。
-func printRedacted(node syntax.Node, prog *syntax.File) string {
+func printRedacted(node syntax.Node) string {
 	var sb strings.Builder
 	printer := syntax.NewPrinter(syntax.Minify(true))
 
