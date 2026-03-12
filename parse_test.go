@@ -110,14 +110,9 @@ func TestCommandNames(t *testing.T) {
 			want:    []string{"ls"},
 		},
 		{
-			name:    "サブコマンド",
-			command: "git log --oneline",
-			want:    []string{"git log"},
-		},
-		{
 			name:    "パイプ",
 			command: "git log --oneline | wc -l",
-			want:    []string{"git log", "wc"},
+			want:    []string{"git", "wc"},
 		},
 		{
 			name:    "コマンド置換内も展開",
@@ -125,14 +120,9 @@ func TestCommandNames(t *testing.T) {
 			want:    []string{"echo", "cat", "ls"},
 		},
 		{
-			name:    "makeはサブコマンドあり",
+			name:    "AND",
 			command: "make build && make test",
-			want:    []string{"make build", "make test"},
-		},
-		{
-			name:    "jqはサブコマンドなし",
-			command: "jq . file.json | jq .name",
-			want:    []string{"jq", "jq"},
+			want:    []string{"make", "make"},
 		},
 		{
 			name:    "空文字列",

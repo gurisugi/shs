@@ -88,51 +88,12 @@ func collectSubstitutions(node syntax.Node, calls *[]*syntax.CallExpr, out *[]st
 	})
 }
 
-// サブコマンドを持つことが既知のコマンド
-var subcommandCommands = map[string]bool{
-	"git":     true,
-	"docker":  true,
-	"kubectl": true,
-	"go":      true,
-	"npm":     true,
-	"yarn":    true,
-	"cargo":   true,
-	"make":    true,
-	"brew":    true,
-	"asdf":    true,
-	"gh":      true,
-	"aws":     true,
-	"gcloud":  true,
-	"az":      true,
-	"heroku":  true,
-	"flyctl":  true,
-	"terraform": true,
-	"systemctl": true,
-	"journalctl": true,
-	"ip":      true,
-}
-
-// extractName はCallExprからコマンド名を抽出する。
-// 既知のサブコマンドを持つコマンド（git, docker等）は2語目まで含める。
-// それ以外は先頭1語のみ。
+// extractName はCallExprからコマンド名（先頭1語）を抽出する。
 func extractName(call *syntax.CallExpr) string {
 	if call == nil || len(call.Args) == 0 {
 		return ""
 	}
-
-	first := wordToLiteral(call.Args[0])
-	if first == "" {
-		return ""
-	}
-
-	if subcommandCommands[first] && len(call.Args) > 1 {
-		second := wordToLiteral(call.Args[1])
-		if second != "" && !strings.HasPrefix(second, "-") {
-			return first + " " + second
-		}
-	}
-
-	return first
+	return wordToLiteral(call.Args[0])
 }
 
 // wordToLiteral はWordノードからリテラル文字列を取得する。
