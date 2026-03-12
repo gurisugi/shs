@@ -20,7 +20,7 @@ func main() {
 		return
 	}
 
-	command, err := readInput(opts.args, os.Stdin)
+	command, err := readInput(os.Stdin)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -52,7 +52,6 @@ func main() {
 }
 
 type options struct {
-	args      []string
 	countOnly bool
 	namesOnly bool
 	help      bool
@@ -69,10 +68,7 @@ func parseFlags(args []string) (options, error) {
 		case "-h", "--help":
 			opts.help = true
 		default:
-			if strings.HasPrefix(arg, "-") {
-				return options{}, fmt.Errorf("unknown flag: %s", arg)
-			}
-			opts.args = append(opts.args, arg)
+			return options{}, fmt.Errorf("unexpected argument: %s", arg)
 		}
 	}
 	if opts.countOnly && opts.namesOnly {
@@ -88,7 +84,6 @@ Split chained shell commands (pipes, &&, ||, ;) into individual commands.
 Command substitutions $() are also expanded recursively.
 
 Usage:
-  shs [options] <command>
   echo <command> | shs [options]
 
 Options:
@@ -97,30 +92,26 @@ Options:
   -h    Show this help
 
 Examples:
-  $ shs "git log --oneline | wc -l"
+  $ echo "git log --oneline | wc -l" | shs
   git log --oneline
   wc -l
 
-  $ shs -c "git log --oneline | wc -l"
+  $ echo "git log --oneline | wc -l" | shs -c
   git log
   wc
 
-  $ shs -n "git log --oneline | wc -l"
+  $ echo "git log --oneline | wc -l" | shs -n
   2
 
-  $ shs 'echo "$(cat file)" && ls'
+  $ echo 'echo "$(cat file)" && ls' | shs
   echo "$()"
   cat file
   ls
 `)
 }
 
-// readInput は引数またはstdinからコマンド文字列を取得する。
-func readInput(args []string, stdin io.Reader) (string, error) {
-	if len(args) > 0 {
-		return strings.Join(args, " "), nil
-	}
-
+// readInput はstdinからコマンド文字列を取得する。
+func readInput(stdin io.Reader) (string, error) {
 	// stdinがターミナルの場合は使い方を表示
 	if f, ok := stdin.(*os.File); ok {
 		if isTerminal(f) {
