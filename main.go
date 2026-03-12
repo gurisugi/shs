@@ -87,7 +87,7 @@ Usage:
   echo <command> | shs [options]
 
 Options:
-  -c    Extract command names only (e.g., "git log" instead of "git log --oneline")
+  -c    Extract command names only (e.g., "git" instead of "git log --oneline")
   -n    Print the number of commands instead of the commands themselves
   -h    Show this help
 
@@ -97,7 +97,7 @@ Examples:
   wc -l
 
   $ echo "git log --oneline | wc -l" | shs -c
-  git log
+  git
   wc
 
   $ echo "git log --oneline | wc -l" | shs -n

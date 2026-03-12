@@ -15,7 +15,7 @@ func splitCommands(command string) ([]string, error) {
 }
 
 // commandNames はシェルコマンド文字列をパースし、
-// 各コマンドの名前部分（サブコマンド含む、引数除く）を返す。
+// 各コマンドの名前部分（先頭1語）を返す。
 func commandNames(command string) ([]string, error) {
 	calls, _, err := parseCommands(command)
 	if err != nil {
