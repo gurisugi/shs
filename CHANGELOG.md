@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.4](https://github.com/gurisugi/shs/compare/v0.0.3...v0.0.4) - 2026-03-12
+- GitHub ActionsをNode.js 24対応バージョンに更新 by @gurisugi in https://github.com/gurisugi/shs/pull/9
+- tagprワークフローのcheckout v6認証問題を修正 by @gurisugi in https://github.com/gurisugi/shs/pull/10
+
 ## [v0.0.3](https://github.com/gurisugi/shs/compare/v0.0.2...v0.0.3) - 2026-03-12
 - tagprの認証をGitHub Appトークンに変更 by @gurisugi in https://github.com/gurisugi/shs/pull/7
 
