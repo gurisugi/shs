@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.0.6](https://github.com/gurisugi/shs/compare/v0.0.5...v0.0.6) - 2026-03-12
+
 ## [v0.0.5](https://github.com/gurisugi/shs/compare/v0.0.4...v0.0.5) - 2026-03-12
 - コードの簡素化とインターフェース改善 by @gurisugi in https://github.com/gurisugi/shs/pull/13
 
