@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-	opts := parseFlags(os.Args[1:])
+	opts, err := parseFlags(os.Args[1:])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
 
 	if opts.help {
 		printUsage()
@@ -23,41 +27,27 @@ func main() {
 	}
 
 	if command == "" {
-		if opts.countOnly {
-			fmt.Println(0)
-		}
 		return
 	}
 
+	var results []string
 	if opts.namesOnly {
-		names, err := commandNames(command)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
-		}
-		if opts.countOnly {
-			fmt.Println(len(names))
-			return
-		}
-		for _, name := range names {
-			fmt.Println(name)
-		}
-		return
+		results, err = commandNames(command)
+	} else {
+		results, err = splitCommands(command)
 	}
-
-	commands, err := splitCommands(command)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	if opts.countOnly {
-		fmt.Println(len(commands))
+		fmt.Println(len(results))
 		return
 	}
 
-	for _, cmd := range commands {
-		fmt.Println(cmd)
+	for _, r := range results {
+		fmt.Println(r)
 	}
 }
 
@@ -68,7 +58,7 @@ type options struct {
 	help      bool
 }
 
-func parseFlags(args []string) options {
+func parseFlags(args []string) (options, error) {
 	var opts options
 	for _, arg := range args {
 		switch arg {
@@ -82,7 +72,10 @@ func parseFlags(args []string) options {
 			opts.args = append(opts.args, arg)
 		}
 	}
-	return opts
+	if opts.countOnly && opts.namesOnly {
+		return options{}, fmt.Errorf("-c and -n cannot be used together")
+	}
+	return opts, nil
 }
 
 func printUsage() {
