@@ -19,5 +19,12 @@ archives:
 checksum:
   name_template: checksums.txt
 
+brews:
+  - repository:
+      owner: gurisugi
+      name: homebrew-tap
+    homepage: https://github.com/gurisugi/shs
+    description: A CLI tool that splits chained shell commands into individual commands
+
 changelog:
   disable: true
