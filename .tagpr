@@ -2,6 +2,6 @@
 # https://github.com/Songmu/tagpr
 [tagpr]
   vPrefix = true
-  release = false
+  release = draft
   releaseBranch = main
 	versionFile = -
