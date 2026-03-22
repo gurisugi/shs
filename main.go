@@ -110,9 +110,9 @@ Examples:
 `)
 }
 
-// readInput はstdinからコマンド文字列を取得する。
+// readInput reads a command string from stdin.
 func readInput(stdin io.Reader) (string, error) {
-	// stdinがターミナルの場合は使い方を表示
+	// show usage if stdin is a terminal
 	if f, ok := stdin.(*os.File); ok {
 		if isTerminal(f) {
 			return "", fmt.Errorf("no input. Run \"shs -h\" for usage")

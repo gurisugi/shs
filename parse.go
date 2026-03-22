@@ -6,16 +6,15 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-// splitCommands はシェルコマンド文字列をパースし、
-// チェーン（パイプ、&&、||、;）やコマンド置換内のコマンドも含めて
-// フラットに個々のコマンドを返す。
+// splitCommands parses a shell command string and returns individual commands
+// flattened from chains (pipes, &&, ||, ;) and command substitutions.
 func splitCommands(command string) ([]string, error) {
 	_, commands, err := parseCommands(command)
 	return commands, err
 }
 
-// commandNames はシェルコマンド文字列をパースし、
-// 各コマンドの名前部分（先頭1語）を返す。
+// commandNames parses a shell command string and returns the name (first word)
+// of each command.
 func commandNames(command string) ([]string, error) {
 	calls, _, err := parseCommands(command)
 	if err != nil {
@@ -73,8 +72,8 @@ func collectFromCmd(cmd syntax.Command, calls *[]*syntax.CallExpr, out *[]string
 	}
 }
 
-// collectSubstitutions はノード内のコマンド置換 $() を探索し、
-// 中のコマンドを収集する。
+// collectSubstitutions walks the node to find command substitutions $()
+// and collects the commands within them.
 func collectSubstitutions(node syntax.Node, calls *[]*syntax.CallExpr, out *[]string) {
 	syntax.Walk(node, func(n syntax.Node) bool {
 		cs, ok := n.(*syntax.CmdSubst)
@@ -88,7 +87,7 @@ func collectSubstitutions(node syntax.Node, calls *[]*syntax.CallExpr, out *[]st
 	})
 }
 
-// extractName はCallExprからコマンド名（先頭1語）を抽出する。
+// extractName extracts the command name (first word) from a CallExpr.
 func extractName(call *syntax.CallExpr) string {
 	if call == nil || len(call.Args) == 0 {
 		return ""
@@ -96,8 +95,8 @@ func extractName(call *syntax.CallExpr) string {
 	return wordToLiteral(call.Args[0])
 }
 
-// wordToLiteral はWordノードからリテラル文字列を取得する。
-// 変数展開やコマンド置換を含む場合は空文字を返す。
+// wordToLiteral returns the literal string from a Word node.
+// Returns an empty string if the word contains variable expansions or command substitutions.
 func wordToLiteral(word *syntax.Word) string {
 	var sb strings.Builder
 	for _, part := range word.Parts {
@@ -110,12 +109,12 @@ func wordToLiteral(word *syntax.Word) string {
 	return sb.String()
 }
 
-// printRedacted はノードを出力する際、コマンド置換の中身を$(...)に置換する。
+// printRedacted prints a node with command substitution contents replaced by $(...).
 func printRedacted(node syntax.Node) string {
 	var sb strings.Builder
 	printer := syntax.NewPrinter(syntax.Minify(true))
 
-	// コマンド置換のStmtsを一時的に空にしてprint
+	// temporarily clear Stmts in command substitutions for printing
 	var saved []savedSubst
 	syntax.Walk(node, func(n syntax.Node) bool {
 		cs, ok := n.(*syntax.CmdSubst)
@@ -129,7 +128,7 @@ func printRedacted(node syntax.Node) string {
 
 	printer.Print(&sb, node)
 
-	// Stmtsを復元
+	// restore Stmts
 	for _, s := range saved {
 		s.cs.Stmts = s.stmts
 	}
