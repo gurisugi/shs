@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.10](https://github.com/gurisugi/shs/compare/v0.0.9...v0.0.10) - 2026-03-22
+- Support GitHub immutable releases by @gurisugi in https://github.com/gurisugi/shs/pull/24
+
 ## [v0.0.9](https://github.com/gurisugi/shs/compare/v0.0.8...v0.0.9) - 2026-03-22
 - Bump actions/create-github-app-token from 2.2.1 to 3.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/18
 - Bump suzuki-shunsuke/pinact-action from 1.4.0 to 2.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/20
