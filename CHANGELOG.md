@@ -3,6 +3,11 @@
 ## [v0.0.9](https://github.com/gurisugi/shs/compare/v0.0.8...v0.0.9) - 2026-03-22
 - Bump actions/create-github-app-token from 2.2.1 to 3.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/18
 - Bump suzuki-shunsuke/pinact-action from 1.4.0 to 2.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/20
+- Add test workflow to CI by @gurisugi in https://github.com/gurisugi/shs/pull/21
+
+## [v0.0.9](https://github.com/gurisugi/shs/compare/v0.0.8...v0.0.9) - 2026-03-22
+- Bump actions/create-github-app-token from 2.2.1 to 3.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/18
+- Bump suzuki-shunsuke/pinact-action from 1.4.0 to 2.0.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/20
 
 ## [v0.0.8](https://github.com/gurisugi/shs/compare/v0.0.7...v0.0.8) - 2026-03-12
 
