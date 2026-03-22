@@ -26,5 +26,8 @@ brews:
     homepage: https://github.com/gurisugi/shs
     description: A CLI tool that splits chained shell commands into individual commands
 
+release:
+  use_existing_draft: true
+
 changelog:
   disable: true
