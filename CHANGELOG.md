@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.11](https://github.com/gurisugi/shs/compare/v0.0.10...v0.0.11) - 2026-03-22
+- Translate comments from Japanese to English by @gurisugi in https://github.com/gurisugi/shs/pull/26
+
 ## [v0.0.10](https://github.com/gurisugi/shs/compare/v0.0.9...v0.0.10) - 2026-03-22
 - Support GitHub immutable releases by @gurisugi in https://github.com/gurisugi/shs/pull/24
 
