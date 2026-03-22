@@ -12,12 +12,12 @@ func TestSplitCommands(t *testing.T) {
 		want    []string
 	}{
 		{
-			name:    "単一コマンド",
+			name:    "single command",
 			command: "ls -la",
 			want:    []string{"ls -la"},
 		},
 		{
-			name:    "パイプ",
+			name:    "pipe",
 			command: "git log --oneline | wc -l",
 			want:    []string{"git log --oneline", "wc -l"},
 		},
@@ -32,47 +32,47 @@ func TestSplitCommands(t *testing.T) {
 			want:    []string{"test -f file", "echo missing"},
 		},
 		{
-			name:    "セミコロン",
+			name:    "semicolon",
 			command: "echo hello; echo world",
 			want:    []string{"echo hello", "echo world"},
 		},
 		{
-			name:    "複合チェーン",
+			name:    "compound chain",
 			command: "git log --oneline | wc -l && echo done",
 			want:    []string{"git log --oneline", "wc -l", "echo done"},
 		},
 		{
-			name:    "3段パイプ",
+			name:    "three-stage pipe",
 			command: "cat file | grep foo | wc -l",
 			want:    []string{"cat file", "grep foo", "wc -l"},
 		},
 		{
-			name:    "クォート内のパイプは分割しない",
+			name:    "pipe inside quotes is not split",
 			command: `jq '[.[] | select(.name)]' file.json`,
 			want:    []string{`jq '[.[] | select(.name)]' file.json`},
 		},
 		{
-			name:    "パイプ+クォート内パイプ",
+			name:    "pipe with quoted pipe",
 			command: `echo hello | jq '[.[] | select(.x)]'`,
 			want:    []string{"echo hello", `jq '[.[] | select(.x)]'`},
 		},
 		{
-			name:    "コマンド置換内のコマンドも展開",
+			name:    "expands commands in command substitution",
 			command: `echo "$(cat file)"`,
 			want:    []string{`echo "$()"`, "cat file"},
 		},
 		{
-			name:    "コマンド置換内のパイプも展開",
+			name:    "expands pipes in command substitution",
 			command: `echo "$(echo foo | grep f)"`,
 			want:    []string{`echo "$()"`, "echo foo", "grep f"},
 		},
 		{
-			name:    "コマンド置換+チェーン",
+			name:    "command substitution with chain",
 			command: `echo "$(cat file)" && ls`,
 			want:    []string{`echo "$()"`, "cat file", "ls"},
 		},
 		{
-			name:    "空文字列",
+			name:    "empty string",
 			command: "",
 			want:    nil,
 		},
@@ -105,17 +105,17 @@ func TestCommandNames(t *testing.T) {
 		want    []string
 	}{
 		{
-			name:    "単一コマンド",
+			name:    "single command",
 			command: "ls -la",
 			want:    []string{"ls"},
 		},
 		{
-			name:    "パイプ",
+			name:    "pipe",
 			command: "git log --oneline | wc -l",
 			want:    []string{"git", "wc"},
 		},
 		{
-			name:    "コマンド置換内も展開",
+			name:    "expands command substitution",
 			command: `echo "$(cat file)" && ls`,
 			want:    []string{"echo", "cat", "ls"},
 		},
@@ -125,7 +125,7 @@ func TestCommandNames(t *testing.T) {
 			want:    []string{"make", "make"},
 		},
 		{
-			name:    "空文字列",
+			name:    "empty string",
 			command: "",
 			want:    nil,
 		},
