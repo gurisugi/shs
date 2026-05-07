@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.0.11](https://github.com/gurisugi/shs/compare/v0.0.10...v0.0.11) - 2026-05-07
+- Translate comments from Japanese to English by @gurisugi in https://github.com/gurisugi/shs/pull/26
+- Translate test names from Japanese to English by @gurisugi in https://github.com/gurisugi/shs/pull/29
+- Bump actions/setup-go from 5.5.0 to 6.3.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/30
+- Bump actions/setup-go from 6.3.0 to 6.4.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/31
+- Bump actions/create-github-app-token from 3.0.0 to 3.1.1 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/32
+- Bump Songmu/tagpr from 1.17.1 to 1.18.1 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/33
+- Bump Songmu/tagpr from 1.18.1 to 1.18.3 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/34
+- Bump goreleaser/goreleaser-action from 7.0.0 to 7.1.0 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/35
+- Bump goreleaser/goreleaser-action from 7.1.0 to 7.2.1 by @dependabot[bot] in https://github.com/gurisugi/shs/pull/36
+
 ## [v0.0.11](https://github.com/gurisugi/shs/compare/v0.0.10...v0.0.11) - 2026-03-22
 - Translate comments from Japanese to English by @gurisugi in https://github.com/gurisugi/shs/pull/26
 
